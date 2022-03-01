@@ -15,23 +15,37 @@ const launch = {
 
 launches.set(launch.flightNumber,launch);
 
+function existsLaunchWithId(launchId){
+    return launches.has(launchId)
+}
+
 function getAllLaunches(){
     return Array.from(launches.values());
 }
 
-function addNewLaunch(launch){
+function addNewLaunch(launch) {
     latestFlightNumber++;
-    launches.set(launch.flightNumber,
-    Object.assign(launch, {
+    launches.set(
+      latestFlightNumber,
+      Object.assign(launch, {
+        success: true,
         upcoming: true,
-        success:true,
-        customer: ['BRNYRMATESWAY','NASA'],
+        customers: ['Brnyr mate sway', 'NASA'],
         flightNumber: latestFlightNumber,
-    })
-  );
+      })
+    );
+  }
+
+function abortLaunchById(launchId){
+    const aborted = launches.get(launchId);
+    aborted.upcoming = false;
+    aborted.success = false;
+    return aborted;
 }
 
 module.exports = { 
     getAllLaunches,
-    addNewLaunch
+    addNewLaunch,
+    existsLaunchWithId,
+    abortLaunchById
 };
