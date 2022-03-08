@@ -110,22 +110,25 @@ async function getLatestFlightNumber() {
 
 
 
-async function getAllLaunches(){
+async function getAllLaunches(skip, limit) {
     // return Array.from(launches.values());
     return await launchesDatabase
     .find({}, { '_id': 0, '__v': 0 })
+    .sort({ flightNumber: 1 })
+    .skip(skip)
+    .limit(limit);
     // .sort({ flightNumber: 1 })
     // .skip(skip)
     // .limit(limit);
 }
 
 async function saveLaunch(launch) {
-  const planet = await planets.findOne({
-    keplerName: launch.target,
-  });
-  if (!planet) {
-    throw new Error('No matching planet found');
-  }
+  // const planet = await planets.findOne({
+  //   keplerName: launch.target,
+  // });
+  // if (!planet) {
+  //   throw new Error('No matching planet found');
+  // }
   await launchesDatabase.findOneAndUpdate({
     flightNumber: launch.flightNumber,
   }, launch, {
@@ -147,12 +150,20 @@ async function saveLaunch(launch) {
 //   }
 
 async function scheduleNewLaunch(launch) {
+  const planet = await planets.findOne({
+    keplerName: launch.target,
+  });
+
+  if (!planet) {
+    throw new Error('No matching planet found');
+  }
+
   const newFlightNumber = await getLatestFlightNumber() + 1;
 
   const newLaunch = Object.assign(launch, {
     success: true,
     upcoming: true,
-    customers: ['Brnyr mate sway', 'NASA'],
+    customers: ['Zero to Mastery', 'NASA'],
     flightNumber: newFlightNumber,
   });
 
